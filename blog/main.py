@@ -44,3 +44,11 @@ def show(id:int,response: Response, db : Session = Depends(get_db)):
         # return {"data" : {f"student with id {id} is not found"}}
         raise HTTPException(status_code=400,detail=f"student with id {id} is not found")
     return student_id
+
+
+# delete all the student with id
+@app.delete('/student/{id}' , status_code=204)
+def delete(id:int,response: Response, db : Session = Depends(get_db)):
+    db.query(models.Student).filter(models.Student.id == id).delete(synchronize_session=False)
+    db.commit()
+    return "done"
