@@ -1,6 +1,29 @@
+from blog.db import Base
 from pydantic import BaseModel
 
 
 class Student(BaseModel):
     name : str
     body : str
+
+# # Extending the Student model and using in the show/get method
+# class ShowStudent(Student):
+#     class Config:
+#         orm_mode = True    # need to add this line since we are using sql alchemy db we need this to interact orm model with the api
+
+
+
+# Extending the BaseModel model and using in the show/get method and displaying only the records which we want to show
+class ShowStudent(BaseModel):
+    name : str # will show only the name
+    class Config:
+        orm_mode = True    # need to add this line since we are using sql alchemy db we need this to interact with the api
+
+
+
+# Creating a Schema for User
+
+class User(BaseModel):
+    user_name:str
+    email:str
+    passwd:str

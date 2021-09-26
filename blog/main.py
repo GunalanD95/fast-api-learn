@@ -5,6 +5,7 @@ from pydantic.networks import HttpUrl
 from . import schemas , models
 from .db import engine ,SessionLocal
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 
 models.Base.metadata.create_all(engine)
 
@@ -37,7 +38,7 @@ def all_students(db : Session = Depends(get_db)):
     return students
 
 # get all the students with ids
-@app.get('/student/{id}' , status_code=200)
+@app.get('/student/{id}' , status_code=200 ,response_model = schemas.ShowStudent ) #using the extended model class from schemas
 def show(id:int,response: Response, db : Session = Depends(get_db)):
     # writing a query to get student record with {id} given and first is used to get the value that matches first
     student_id = db.query(models.Student).filter(models.Student.id == id).first()
@@ -65,5 +66,27 @@ def update(id:int,request: schemas.Student , db : Session = Depends(get_db)):
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND,detail=f'student is not found with {id}')
     stud.update({'name':request.name,'body':request.body})  # update the record with update method
     db.commit()
-    db.refresh()
     return "Success"
+
+
+pass_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
+
+
+# Creating a user
+@app.post('/user')
+def create_user(request: schemas.User,db : Session = Depends(get_db)):
+    hased_Password = pass_context.hash(request.passwd) #hasinng the password using passlib lib
+    new_user = models.User(user_name=request.user_name,email =request.email,passwd =hased_Password)
+    # new_user = models.User(request)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+# Getting the user
+@app.get('/user/{id}')
+def get_user(id:int,response: Response, db : Session = Depends(get_db)):
+    user_id = db.query(models.User).filter(models.User.id == id).first()
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'the user with {id} is not found in the db') # for get method we dont need to commmit to db
+    return user_id
