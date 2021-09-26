@@ -1,5 +1,7 @@
+from os import stat
 from fastapi import FastAPI , status , Response , HTTPException
 from fastapi import FastAPI, Depends
+from pydantic.networks import HttpUrl
 from . import schemas , models
 from .db import engine ,SessionLocal
 from sqlalchemy.orm import Session
@@ -52,3 +54,16 @@ def delete(id:int,response: Response, db : Session = Depends(get_db)):
     db.query(models.Student).filter(models.Student.id == id).delete(synchronize_session=False)
     db.commit()
     return "done"
+
+
+# update all the student record with id
+@app.put('/student/{id}' , status_code=status.HTTP_202_ACCEPTED)
+def update(id:int,request: schemas.Student , db : Session = Depends(get_db)):
+    stud = db.query(models.Student).filter(models.Student.id == id) # getting the record with the id from schema
+    # db.query(models.Student).filter(models.Student.id == id).update(request) # update the record with update method
+    if not stud.first():
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND,detail=f'student is not found with {id}')
+    stud.update({'name':request.name,'body':request.body})  # update the record with update method
+    db.commit()
+    db.refresh()
+    return "Success"
