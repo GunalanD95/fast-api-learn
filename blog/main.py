@@ -6,6 +6,9 @@ from . import schemas , models
 from .db import engine ,SessionLocal
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from . import hash
+
+
 
 models.Base.metadata.create_all(engine)
 
@@ -75,8 +78,7 @@ pass_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
 # Creating a user
 @app.post('/user')
 def create_user(request: schemas.User,db : Session = Depends(get_db)):
-    hased_Password = pass_context.hash(request.passwd) #hasinng the password using passlib lib
-    new_user = models.User(user_name=request.user_name,email =request.email,passwd =hased_Password)
+    new_user = models.User(user_name=request.user_name,email =request.email,passwd =hash.Hash.encrypt_bcrypt(request.passwd))
     # new_user = models.User(request)
     db.add(new_user)
     db.commit()
