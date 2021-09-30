@@ -25,9 +25,9 @@ def get_db():
 
 
 
-@app.post('/student' , status_code=status.HTTP_201_CREATED) # importing status and using it is a status code for our responses
+@app.post('/student' , status_code=status.HTTP_201_CREATED, tags=['student']) # importing status and using it is a status code for our responses
 def create(request: schemas.Student , db : Session = Depends(get_db)): # get db is used to make connection with our database
-    new_student = models.Student(name=request.name,body =request.body)
+    new_student = models.Student(name=request.name,body =request.body,user_id=request.user_name) #user_id is linked to users table
     db.add(new_student)
     db.commit()
     db.refresh(new_student)
@@ -35,13 +35,13 @@ def create(request: schemas.Student , db : Session = Depends(get_db)): # get db 
 
 
 # get all the students which we created using post method 
-@app.get('/student')
+@app.get('/student', tags=['student'])
 def all_students(db : Session = Depends(get_db)):
     students = db.query(models.Student).all()
     return students
 
 # get all the students with ids
-@app.get('/student/{id}' , status_code=200 ,response_model = schemas.ShowStudent ) #using the extended model class from schemas
+@app.get('/student/{id}' , status_code=200 ,response_model = schemas.ShowStudent , tags=['student']) #using the extended model class from schemas
 def show(id:int,response: Response, db : Session = Depends(get_db)):
     # writing a query to get student record with {id} given and first is used to get the value that matches first
     student_id = db.query(models.Student).filter(models.Student.id == id).first()
@@ -53,7 +53,7 @@ def show(id:int,response: Response, db : Session = Depends(get_db)):
 
 
 # delete all the student with id
-@app.delete('/student/{id}' , status_code=204)
+@app.delete('/student/{id}' , status_code=204, tags=['student'])
 def delete(id:int,response: Response, db : Session = Depends(get_db)):
     db.query(models.Student).filter(models.Student.id == id).delete(synchronize_session=False)
     db.commit()
@@ -61,7 +61,7 @@ def delete(id:int,response: Response, db : Session = Depends(get_db)):
 
 
 # update all the student record with id
-@app.put('/student/{id}' , status_code=status.HTTP_202_ACCEPTED)
+@app.put('/student/{id}' , status_code=status.HTTP_202_ACCEPTED, tags=['student'])
 def update(id:int,request: schemas.Student , db : Session = Depends(get_db)):
     stud = db.query(models.Student).filter(models.Student.id == id) # getting the record with the id from schema
     # db.query(models.Student).filter(models.Student.id == id).update(request) # update the record with update method
@@ -72,11 +72,14 @@ def update(id:int,request: schemas.Student , db : Session = Depends(get_db)):
     return "Success"
 
 
+
+###------------------------USER APIS---------------------###
+
 pass_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
 
 
 # Creating a user
-@app.post('/user',response_model=schemas.ShowUser) # we are using response model to limit the respone body which we want to show using schema class
+@app.post('/user',response_model=schemas.ShowUser, tags=['users']) # we are using response model to limit the respone body which we want to show using schema class
 def create_user(request: schemas.User,db : Session = Depends(get_db)):
     new_user = models.User(user_name=request.user_name,email =request.email,passwd =hash.Hash.encrypt_bcrypt(request.passwd)) # calling the encrypt_bcrypt from hash.py
     # new_user = models.User(request)
@@ -86,7 +89,7 @@ def create_user(request: schemas.User,db : Session = Depends(get_db)):
     return new_user
 
 # Getting the user
-@app.get('/user/{id}')
+@app.get('/user/{id}',tags=['users'])
 def get_user(id:int,response: Response, db : Session = Depends(get_db)):
     user_id = db.query(models.User).filter(models.User.id == id).first()
     if not user_id:

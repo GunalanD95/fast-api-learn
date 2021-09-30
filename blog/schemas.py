@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class Student(BaseModel):
     name : str
     body : str
+    user_name: str
 
 # # Extending the Student model and using in the show/get method
 # class ShowStudent(Student):
