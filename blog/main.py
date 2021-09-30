@@ -76,9 +76,9 @@ pass_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
 
 
 # Creating a user
-@app.post('/user')
+@app.post('/user',response_model=schemas.ShowUser) # we are using response model to limit the respone body which we want to show using schema class
 def create_user(request: schemas.User,db : Session = Depends(get_db)):
-    new_user = models.User(user_name=request.user_name,email =request.email,passwd =hash.Hash.encrypt_bcrypt(request.passwd))
+    new_user = models.User(user_name=request.user_name,email =request.email,passwd =hash.Hash.encrypt_bcrypt(request.passwd)) # calling the encrypt_bcrypt from hash.py
     # new_user = models.User(request)
     db.add(new_user)
     db.commit()
