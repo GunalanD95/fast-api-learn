@@ -7,12 +7,14 @@ from .db import engine ,SessionLocal
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from . import hash
-
-
+from . routers import student , user
 
 models.Base.metadata.create_all(engine)
 
 app = FastAPI()
+
+app.include_router(student.router) # importing the student router which we created in routers file
+
 
 
 def get_db():
@@ -35,10 +37,10 @@ def create(request: schemas.Student , db : Session = Depends(get_db)): # get db 
 
 
 # get all the students which we created using post method 
-@app.get('/student', tags=['student'])
-def all_students(db : Session = Depends(get_db)):
-    students = db.query(models.Student).all()
-    return students
+# @app.get('/student', tags=['student'])
+# def all_students(db : Session = Depends(get_db)):
+#     students = db.query(models.Student).all()
+#     return students
 
 # get all the students with ids
 @app.get('/student/{id}' , status_code=200 ,response_model = schemas.ShowStudent , tags=['student']) #using the extended model class from schemas
