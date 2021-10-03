@@ -35,3 +35,11 @@ class ShowUser(BaseModel):
 
     class Config():
         orm_mode = True  
+
+
+class Login(BaseModel):
+    email:str
+    passwd:str
+
+    class Config():
+        orm_mode = True  
