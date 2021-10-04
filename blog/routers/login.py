@@ -1,11 +1,14 @@
+from datetime import timedelta
 from fastapi import APIRouter, Depends # importing api router
 from fastapi import FastAPI , status , Response , HTTPException
+
+from blog.token import ACCESS_TOKEN_EXPIRE_MINUTES
 
 from .. import schemas , models , db
 from ..db import engine ,SessionLocal
 from sqlalchemy.orm import Session
 from ..hash import Hash
-
+from ..token import create_access_token
 
 router = APIRouter(
     tags=['login']
@@ -24,4 +27,10 @@ def user_login(request: schemas.Login,db : Session = Depends(get_db)):
 
 
     # if login success we need to generate a jwt token
-    return "login success"
+
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data = {"sub": email.email}, expires_delta = access_token_expires
+    )
+    return {"access_token": access_token,"token_type":"bearer"}
