@@ -4,14 +4,14 @@ from fastapi import FastAPI , status , Response , HTTPException
 from ..db import engine ,SessionLocal
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from .. import hash
+from .. import hash , oauth2
 
 
 
 # Writing functions for our routers
 
 # function for '/student'
-def get_all_students(db : Session):
+def get_all_students(db : Session,get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     students = db.query(models.Student).all()
     return students
 
@@ -26,7 +26,7 @@ def create_student(request: schemas.Student , db : Session): # get db is used to
 
 
 # get all the students with ids
-def show_student(id:int,response: Response, db : Session):
+def show_student(id:int,response: Response, db : Session,get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     # writing a query to get student record with {id} given and first is used to get the value that matches first
     student_id = db.query(models.Student).filter(models.Student.id == id).first()
     if not student_id:
