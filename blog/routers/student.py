@@ -4,7 +4,7 @@ from .. import schemas , models , db
 from ..db import engine ,SessionLocal
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from .. import hash
+from .. import hash , oauth2
 from ..repos import student
 
 
@@ -16,13 +16,13 @@ router = APIRouter(
 )
 
 @router.get('/student')
-def all_students(db : Session = Depends(db.get_db)):
+def all_students(db : Session = Depends(db.get_db),get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return student.get_all_students(db) # calling our get method fun from repos directory 
 
 
 
 @router.post('/student' , status_code=status.HTTP_201_CREATED) # importing status and using it is a status code for our responses
-def create(request: schemas.Student , db : Session = Depends(get_db)): # get db is used to make connection with our database
+def create(request: schemas.Student , db : Session = Depends(get_db),get_current_user: schemas.User = Depends(oauth2.get_current_user)): # get db is used to make connection with our database
     return student.create_student(request,db)
 
 

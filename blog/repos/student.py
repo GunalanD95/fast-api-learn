@@ -11,7 +11,7 @@ from .. import hash , oauth2
 # Writing functions for our routers
 
 # function for '/student'
-def get_all_students(db : Session,get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+def get_all_students(db : Session):
     students = db.query(models.Student).all()
     return students
 
@@ -26,7 +26,7 @@ def create_student(request: schemas.Student , db : Session): # get db is used to
 
 
 # get all the students with ids
-def show_student(id:int,response: Response, db : Session,get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+def show_student(id:int,response: Response):
     # writing a query to get student record with {id} given and first is used to get the value that matches first
     student_id = db.query(models.Student).filter(models.Student.id == id).first()
     if not student_id:
