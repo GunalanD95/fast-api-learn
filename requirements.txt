@@ -25,3 +25,4 @@ ecdsa==0.17.0
 pyasn1==0.4.8 
 python-jose==3.3.0 
 rsa==4.7.2
+python-multipart

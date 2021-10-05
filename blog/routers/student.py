@@ -29,18 +29,18 @@ def create(request: schemas.Student , db : Session = Depends(get_db),get_current
 
 # get all the students with ids
 @router.get('/student/{id}' , status_code=200 ,response_model = schemas.ShowStudent) #using the extended model class from schemas
-def show(id:int,response: Response, db : Session = Depends(get_db)):
+def show(id:int,response: Response, db : Session = Depends(get_db),get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return student.show_student(id,response,db)
 
 
 # delete all the student with id
 @router.delete('/student/{id}' , status_code=204)
-def delete(id:int,response: Response, db : Session = Depends(get_db)):
+def delete(id:int,response: Response, db : Session = Depends(get_db),get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return student.delete_student(id,response,db)
 
 
 # update all the student record with id
 @router.put('/student/{id}' , status_code=status.HTTP_202_ACCEPTED)
-def update(id:int,request: schemas.Student , db : Session = Depends(get_db)):
+def update(id:int,request: schemas.Student , db : Session = Depends(get_db),get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return student.update_student(id,request,db)
     
