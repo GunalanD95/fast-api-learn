@@ -63,7 +63,48 @@ Class User(BaseModel):
    
 ```
 
+ ######  creating a engine and db connection using sqlalchemy 
  
+ create a db file to store our tables , inside app folder create a app.db file
+ ```
+ # creating and connecting the db with our FastApi App
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL,connect_args={"check_same_thread": False})
+
+
+Base = declarative_base() #Now we will use in models which returns a orm classes.
+
+SessionLocal = sessionmaker(bind= engine , autocommit=False, autoflush=False) # creating a session local for class instance
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close
+```
+
+######  creating user table using SQLAlchemy models
+
+```
+create a models file to create user table , inside app folder create a models.py file
+from .app import Base # importing the base class from db file
+from sqlalchemy import Column, Integer , String , ForeignKey # importing the data types
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer,primary_key=True,index=True)
+    user_name = Column(String)
+    email = Column(String)
+    passwd = Column(String)
+```
+
+Now we have a db connection , schemas for our response models and models for tables , lets create our user APis
 
 
 
