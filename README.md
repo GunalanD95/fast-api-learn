@@ -1,3 +1,3 @@
-# fast-api-learn
+#fast-api-learn
 
-Baisc project using fast api 
+##              FAST-API PROJECT DOCUMENTATION
