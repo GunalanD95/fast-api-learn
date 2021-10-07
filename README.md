@@ -44,6 +44,25 @@ Yup , thats it.
  - UPDATE TABLES
  - GET METHOD TO FETCH DETAILS USING SPECIFIC IDS 
  - AUTHENTICATION USING JWT
+
+
+Lets Build our user apis
+
+######  We will create schemas for for user apis and use them  in response using pydantic
+
+Inside app folder create a schemas.py file
+
+```
+from pydantic import BaseModel
+
+# Creating a Schema for User
+Class User(BaseModel):
+   user_name:str
+   email:str
+   passwd:str
+   
+```
+
  
 
 
