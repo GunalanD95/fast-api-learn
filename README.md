@@ -106,5 +106,54 @@ class User(Base):
 
 Now we have a db connection , schemas for our response models and models for tables , lets create our user APis
 
+###### CREATING USER API
+
+Since we are going to have multiple apis , its better to have them as routers . for that we need to create router files and repo (to write function for apis) and finally we will include them in main.py
+
+Create two folders inside app called repos and routers
+create a user.py in both folders
+
+In app/routers/user.py
+```
+from fastapi import APIRouter, Depends , Response  # importing api router
+from .. import schemas , models , app
+from ..app import engine ,SessionLocal
+from sqlalchemy.orm import Session
+from ..repos import user
+
+
+router = APIRouter(
+    tags=['users'],
+    prefix="/user", # initializing /user as root page 
+)
+
+get_db = app.get_db # importing the db connection
+
+
+# Creating a user
+@router.post('/',response_model=schemas.User) # we are using response model to limit the respone body which we want to show using schema class
+def create_user(request: schemas.User,db : Session = Depends(get_db)): # using schemas as request
+    return user.create_user(request,db) # calling the create user fun from repo/user.py file
+
+```
+
+Now since repo/user.py we need to write fun to create user 
+
+```
+from fastapi import Depends , Response 
+from .. import schemas , models , app
+from ..app import engine ,SessionLocal
+from sqlalchemy.orm import Session
+
+
+# Creating a user
+def create_user(request: schemas.User,db : Session):
+    new_user = models.User(user_name=request.user_name,email =request.email,passwd =request.passwd)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+```
 
 
