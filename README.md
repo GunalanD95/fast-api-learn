@@ -37,5 +37,14 @@ uvicorn main:app --reload
 
 Yup , thats it.
 
+######  WHAT WE ARE GOING BUILD IN THIS PROJECT ?
+ We will be creating a user table  with authentication to routes and student table with details 
+ - CREATE STUDENT AND USER
+ - DELETE STUDENT AND USER
+ - UPDATE TABLES
+ - GET METHOD TO FETCH DETAILS USING SPECIFIC IDS 
+ - AUTHENTICATION USING JWT
+ 
+
 
 
